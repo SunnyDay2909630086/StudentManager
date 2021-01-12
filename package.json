@@ -1,0 +1,26 @@
+{
+  "name": "StudentManager",
+  "version": "1.0.0",
+  "description": "a node project",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "svg-captcha": "^1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunnyDay2909630086/StudentManager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SunnyDay2909630086/StudentManager/issues"
+  },
+  "homepage": "https://github.com/SunnyDay2909630086/StudentManager#readme"
+}
