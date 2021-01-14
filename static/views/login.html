@@ -49,36 +49,39 @@
           <div class="panel panel-default panel-primary login-panel">
             <div class="panel-heading">登录学生管理系统</div>
             <div class="panel-body">
-              <form class="form-horizontal">
+              <form class="form-horizontal" action="/login" method="post">
                 <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-2 control-label" >用户名</label >
+                  <label for="userName" class="col-sm-2 control-label" >用户名</label >
                   <div class="col-sm-10">
                     <input
-                      type="email"
+                      type="text"
+                      name="userName"
                       class="form-control"
-                      id="inputEmail3"
+                      id="userName"
                       placeholder="请输入用户名"
                     />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="inputPassword3" class="col-sm-2 control-label" >密码</label >
+                  <label for="userPass" class="col-sm-2 control-label" >密码</label >
                   <div class="col-sm-10">
                     <input
                       type="password"
+                      name="userPass"
                       class="form-control"
-                      id="inputPassword3"
+                      id="userPass"
                       placeholder="请输入密码"
                     />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="inputPassword3" class="col-sm-2 control-label" >验证码</label >
+                  <label for="code" class="col-sm-2 control-label" >验证码</label >
                   <div class="col-sm-6">
                     <input
                       type="password"
+                      name="code"
                       class="form-control"
-                      id="inputPassword3"
+                      id="code"
                       placeholder="请输入验证码"
                     />
                   </div>
@@ -89,7 +92,7 @@
                 <div class="form-group">
                   <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-default">登录</button>
-                    <a href="./register.html" class="btn btn-danger">注册</a>
+                    <a href="/register" class="btn btn-danger">注册</a>
                   </div>
                 </div>
               </form>
