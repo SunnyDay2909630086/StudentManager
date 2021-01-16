@@ -8,12 +8,8 @@ let path = require('path')
 let session = require('express-session')
 //body-parser模块,格式化表单数据
 let bodyParser = require('body-parser')
-// 引入mongodb模块
-const MongoClient = require('mongodb').MongoClient;
-// Connection URL
-const url = 'mongodb://localhost:27017';
-// Database Name
-const dbName = 'test';
+//使用自己抽取的工具函数
+let myTools = require(path.join(__dirname, 'tools/my-tools'))
 
 //创建app
 let app = express();
@@ -50,8 +46,9 @@ app.post('/login', (req, res)=>{
         res.redirect('/index');
     }else{
         // console.log('验证失败');
-        res.setHeader('content-type', 'text/html')
-        res.send('<script>alert("验证码失败");window.location.href="/login"</script>')
+        myTools.sendMsg(res, '验证码失败', '/login')
+        // res.setHeader('content-type', 'text/html')
+        // res.send('<script>alert("验证码失败");window.location.href="/login"</script>')
     }
 })
 
@@ -74,8 +71,7 @@ app.get('/index', (req, res)=>{
     if(req.session.userInfo){
         res.sendFile(path.join(__dirname,'static/views/index.html'))
     }else{
-        res.setHeader('content-type', 'text/html')
-        res.send('<script>alert("验证码失败");window.location.href="/login"</script>')
+        myTools.sendMsg(res, '验证码失败', '/login')
     }
 })
 
@@ -94,37 +90,23 @@ app.get('/register', (req,res)=>{
 
 //路由7
 app.post('/register', (req,res)=>{
+    //接受数据
     let userName = req.body.userName
     let userPass = req.body.userPass
     // Use connect method to connect to the server
-    MongoClient.connect(url, function(err, client) {
-        const db = client.db(dbName);
-        //选择使用的集合
-        const collection = db.collection('user');
-        // 查询数据
-        collection.find({
-            userName
-        }).toArray(function(err, doc) {
-            console.log(doc,'doc')
-            if(doc.length==0){
-                // 没有数据就新增数据
-                collection.insertOne({
-                    userName,
-                    userPass
-                }, (err, result)=> {
-                    console.log(err,'err');
-                    //注册成功
-                    res.setHeader('content-type', 'text/html');
-                    res.send('<script>alert("欢迎入坑");window.location.href="/login"</script>');
-                    client.close();
-                });
-            }
-        });
-        // client.close();
-    });
-    //接受数据
-    //添加到数据库
-    // 去登陆页
+    myTools.find('user', { userName }, (err, doc)=>{
+        if(doc.length == 0){
+            //新增数据
+            myTools.insert('user', { userName, userPass }, (err, result)=>{
+                if(!err){
+                    myTools.sendMsg(res, '欢迎入坑', '/login')
+                }
+            })
+        }else{
+            //已被注册
+            myTools.sendMsg(res, '很遗憾已被使用', '/register')
+        }
+    })
 })
 
 //开始监听
