@@ -10,6 +10,8 @@ let session = require('express-session')
 let bodyParser = require('body-parser')
 //使用自己抽取的工具函数
 let myTools = require(path.join(__dirname, 'tools/my-tools'))
+// 路由模块
+let indexRoute = require(path.join(__dirname, 'router/indexRoute.js'))
 
 //创建app
 let app = express();
@@ -21,6 +23,11 @@ app.use(session({
 }));
 //使用body-parser中间件
 app.use(bodyParser.urlencoded({ extended: false }))
+//使用index路由中间件挂载到/index这个路径下
+app.use('/index', indexRoute);
+// 引入art-template
+app.engine('art', require('express-art-template'));
+app.set('views', '/static/views');
 
 //路由1
 //访问登录页面，直接读取并返回
@@ -38,17 +45,26 @@ app.post('/login', (req, res)=>{
     let code = req.body.code
     if(code == req.session.captcha){
         // console.log('验证码正确');
-        //设置userInfo
-        req.session.userInfo = {
-            userName,
-            userPass
-        }
-        res.redirect('/index');
+        // 验证用户名和密码
+        myTools.find('user', {userName, userPass}, (err, docs)=>{
+            if(!err){
+                // console.log(docs,'docs');
+                if(docs.length == 1){
+                    // 保存session
+                    req.session.userInfo = {
+                        userName
+                    }
+                    //去首页
+                    myTools.sendMsg(res, '欢迎来到首页', '/index');
+                }else{
+                    // 用户名或密码错误
+                    myTools.sendMsg(res, '用户名或密码错误', '/login');
+                }
+            }
+        })
     }else{
         // console.log('验证失败');
         myTools.sendMsg(res, '验证码失败', '/login')
-        // res.setHeader('content-type', 'text/html')
-        // res.send('<script>alert("验证码失败");window.location.href="/login"</script>')
     }
 })
 

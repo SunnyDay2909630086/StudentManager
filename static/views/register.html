@@ -79,4 +79,17 @@
 <script src="../lib/js/jquery-1.12.4.js"></script>
 <!-- Include all compiled plugins (below), or include individual fn iles as needed -->
 <script src="../lib/js/bootstrap.min.js"></script>
-<script></script>
+<script src="../lib/js/jquery.md5.js"></script>
+<script>
+  $(function(){
+    $('form button[type=submit]').click(function(event){
+      //阻止默认事件
+      // event.preventDefault();
+      //加密
+      let oldPass = $('#userPass').val();
+      let md5 = $.md5(oldPass, 'keyboard cat');
+      console.log(md5, 'md5');
+      $('#userPass').val();
+    })
+  })
+</script>

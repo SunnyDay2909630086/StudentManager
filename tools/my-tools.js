@@ -33,5 +33,25 @@ module.exports = {
                 callback(err, result);
             })
         });
+    },
+    //删除
+    delete(collectionName, query, callback){
+        MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
+            const db = client.db(dbName);
+            db.collection(collectionName).deleteOne(query, (err, result)=>{
+                client.close();
+                callback(err, result);
+            })
+        })
+    },
+    //修改
+    update(collectionName, query, doc, callback){
+        MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
+            const db = client.db(dbName);
+            db.collection(collectionName).updateOne(query, {$set: doc}, (err, result) =>{
+                client.close();
+                callback(err, result)
+            })
+        })
     }
 }

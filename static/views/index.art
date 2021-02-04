@@ -47,7 +47,7 @@
                     </div>
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                        <p class="navbar-text navbar-right">欢迎[么么哒]
+                        <p class="navbar-text navbar-right">欢迎[{{userName}}]登录
                             <a href="/logout" class="navbar-link logout">退出</a>
                         </p>
                     </div><!-- /.navbar-collapse -->
@@ -123,4 +123,5 @@
 <script src="../lib/js/jquery-1.12.4.js"></script>
 <!-- Include all compiled plugins (below), or include individual fn iles as needed -->
 <script src="../lib/js/bootstrap.min.js"></script>
-<script></script>
+<script>
+</script>
