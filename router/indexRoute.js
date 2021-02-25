@@ -21,7 +21,7 @@ indexRoute.get('/', (req, res)=>{
 //新增数据
 indexRoute.get('/insert', (req, res)=>{
     // 接受数据
-    // console.log(req.query,'query');
+    console.log(req.query,'query');
     myTools.insert('user', req.query, (err, result)=>{
         if(!err) res.json({
             mess:"新增成功",
@@ -46,14 +46,17 @@ indexRoute.get('/delete', (req, res)=>{
 
 //修改数据
 indexRoute.get('/update', (req, res)=>{
-    let name=req.query.name
-    let age=req.query.age
-    let phone=req.query.phone
-    myTools.update('user', {_id:objectId(req.query.id)}, {name, age, phone}, (err,result)=>{
+    //接受数据
+    let address = req.query.address
+    let age = req.query.age
+    let info = req.query.info
+    let name = req.query.name
+    let phone = req.query.phone
+    let sex = req.query.sex
+    myTools.update('user', {_id:objectId(req.query.id)}, {address, age, info, name, phone, sex}, (err,result)=>{
         if(!err) res.json({
             mess:"修改成功",
-            code: 200,
-            list: docs
+            code: 200
         });
     })
     //提示用户
@@ -73,10 +76,17 @@ indexRoute.get('/list', (req, res)=>{
 
 //根据名字获取数据
 indexRoute.get('/search', (req, res)=>{
-    //需要传递参数userName过来
-    let name = req.query.userName;
+    //定义查询的对象
+    let query = {};
+    if(req.query.userName){
+        query.name = new RegExp(req.query.userName);
+    }
+    if(req.query.id){
+        query._id = objectId(req.query.id);
+    }
+    // console.log(query, 'queryid');
     //加正则实现模糊查询
-    myTools.find('user', {name:new RegExp(name)}, (err, docs)=>{
+    myTools.find('user', query, (err, docs)=>{
         if(!err) res.json({
             mess: '数据',
             code: 200,

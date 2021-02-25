@@ -24,7 +24,9 @@
           color: red;
           font-weight: 700;
       }
-      /* 上下左右居中 */
+      .hidden{
+          display: none;
+      }
     </style>
   </head>
 
@@ -65,7 +67,7 @@
                 <a href="/logout" class="list-group-item">退出系统</a>
               </div>
           </div>
-          <div class="col-md-9">
+          <div class="col-md-9 list-box">
               <div class="panel panel-default">
                 <div class="panel-heading">
                     <ol class="breadcrumb">
@@ -83,8 +85,8 @@
                               <input type="text" class="form-control" id="exampleInputAmount" placeholder="请输入学生姓名进行查询">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-success">查找</button>
-                        <button type="submit" class="btn btn-success">新增</button>
+                        <button type="button" class="btn btn-success btn-search">查找</button>
+                        <button type="submit" class="btn btn-success btn-show-add">新增</button>
                     </form>
                 </div>
                 <div class="panel-body">
@@ -107,11 +109,68 @@
                                 <td>
                                   <a href="./update.html" class="btn btn-success btn-sm">编辑</a>
                                   |
-                                  <a href="#" class="btn btn-danger btn-sm">删除</a>
+                                  <a href="" class="btn btn-danger btn-sm">删除</a>
                                 </td>
                               </tr>
                         </tbody>
                     </table>
+                </div>
+              </div>
+          </div>
+          <div class="col-md-9 add-box hidden">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                    <ol class="breadcrumb">
+                        <li><a href="#">首页</a></li>
+                        <li><a href="#">学生管理</a></li>
+                        <li class="active">学生列表</li>
+                    </ol>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">姓名</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入学生姓名" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="age" class="col-sm-2 control-label">年龄</label>
+                            <div class="col-sm-10">
+                            <input type="number" class="form-control" id="age" name="age" placeholder="请输入学生的年龄">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex" class="col-sm-2 control-label">性别</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="sex" name="sex" placeholder="请输入学生的性别">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="col-sm-2 control-label">电话</label>
+                            <div class="col-sm-10">
+                            <input type="number" class="form-control" id="phone" name="phone" placeholder="请输入电话号码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-2 control-label">地址</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control" id="address" name="address" placeholder="请输入地址">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="info" class="col-sm-2 control-label">简介</label>
+                            <div class="col-sm-10">
+                                <textarea  style="width: 550px;height: 220px;" id="info" name="info" placeholder="请输入简介"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn-control btn btn-default">修改</button>
+                                <a href="javascript:void(0)" class="btn btn-warning">取消</a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
               </div>
           </div>
@@ -123,5 +182,190 @@
 <script src="../lib/js/jquery-1.12.4.js"></script>
 <!-- Include all compiled plugins (below), or include individual fn iles as needed -->
 <script src="../lib/js/bootstrap.min.js"></script>
+<script src="../lib/js/template-web.js"></script>
+<!-- <script type="text/html" id="list">
+  {{each list}}
+    <tr>
+      <td>{{$value.name}}</td>
+      <td>{{$value.age}}</td>
+      <td>{{$value.sex}}</td>
+      <td>{{$value.phone}}</td>
+      <td>
+        <a href="#" class="btn btn-success btn-sm">编辑</a>
+        |
+        <a href="#" class="btn btn-danger btn-sm">删除</a>
+      </td>
+    </tr>
+  {{/each}}
+</script> -->
 <script>
+  $(function(){
+    //页面打开，获取数据
+    getData();
+    //点击出现新增盒子
+    $('.btn-show-add').click(function(event){
+      //阻止默认行为
+      event.preventDefault();
+      $('.list-box').addClass('hidden');
+      //新增盒子
+      $('.add-box').removeClass('hidden').find('button[type=submit]').addClass('btn-danger').text('新增');
+    })
+
+    //点击取消按钮
+    $('a.btn-warning').click(function(){
+      $('.list-box').removeClass('hidden');
+      $('.add-box').addClass('hidden')
+    })
+
+    //点击新增/修改提交按钮
+    $('.btn-control').click(function(event){
+        //阻止默认事件
+        event.preventDefault();
+        //判断内容
+        if($(this).text() == '新增'){
+          $.ajax({
+            url: '/index/insert',
+            data: $('.add-box form').serialize(),
+            type:'get',
+            success: (backData)=>{
+              console.log(backData,'backData');
+              getData();
+              //关闭新增界面
+              //显示列表区域
+              $('a.btn-warning').click();
+            }
+          })
+        }else{
+          //如果是修改按钮
+          //格式化数据
+          let sendData = $('.add-box form').serialize();
+          console.log(sendData);
+          //拼接id上去
+          sendData += `&id=${$(this).attr('data-id')}`;
+          //修改逻辑
+          $.ajax({
+            url: '/index/update',
+            data: sendData,
+            type: 'get',
+            success: function(backData){
+              console.log(backData);
+              getData();
+              //显示列表区域
+              $('a.btn-warning').click();
+            }
+          })
+        }
+    })
+    
+    //删除逻辑
+    $('.list-box tbody').on('click', 'a.btn-danger', function(){
+      //提示用户
+      if(window.confirm('确定要删除吗？')){
+        //获取id
+        let id = $(this).parent().parent().attr('data-id');
+        console.log(id,'id');
+        //调用借口
+        $.ajax({
+          url: '/index/delete',
+          data: {id},
+          // type:,
+          success: function(backData){
+            console.log(backData);
+            getData();
+          }
+        })
+      }else{
+        alert('好样的');
+      }
+    })
+
+    //查询逻辑
+    $('.btn-search').click(function(){
+      //获取输入的值
+      let userName = $('#exampleInputAmount').val();
+      //调用ajax
+      $.ajax({
+        url: '/index/search',
+        data: { userName },
+        // type:,
+        success: function(backData){
+          // console.log(backData);
+          searchData(backData);
+        }
+      })
+    })
+
+    //编辑逻辑
+    $('.list-box tbody').on('click', 'a.btn-success', function(){
+      //获取id
+      let id = $(this).parent().parent().attr('data-id');
+      // console.log(id, 'id');
+      //调接口
+      $.ajax({
+        url: '/index/search',
+        data: {id},
+        // type:,
+        success: function(backData){
+          console.log(backData);
+          $('.list-box').addClass('hidden');
+          $('.add-box').removeClass('hidden');
+          let data = backData.list[0];
+          for (const key in data){
+            $(`.add-box form [name=${key}]`).val(data[key]);
+          }
+          //保存id
+          $('.add-box form button[type=submit]').attr('data-id', data._id)
+        }
+      })
+    })
+ 
+    function getData(){
+        $.ajax({
+          url: 'index/list',
+          // data:,
+          // type:,
+          success:function(backData){
+            // console.log(backData,'data');
+            // let result = template('list', backData);
+            //   console.log(result, 'res');
+            let totalStr = ''
+            for(let i=0; i<backData.list.length; i++){
+              totalStr += `
+                <tr data-id='${backData.list[i]._id}'>
+                  <td>${backData.list[i].name}</td>
+                  <td>${backData.list[i].age}</td>
+                  <td>${backData.list[i].sex}</td>
+                  <td>${backData.list[i].phone}</td>
+                  <td>
+                    <a href="#" class="btn btn-success btn-sm">编辑</a>
+                    |
+                    <a href="#" class="btn btn-danger btn-sm">删除</a>
+                  </td>
+                </tr>`
+            }
+            $('.list-box table tbody').html(totalStr)
+          }
+        })
+    }
+      
+    //抽取函数， 根据查询内容渲染列表
+    function searchData(backData){
+      let totalStr = ''
+      for(let i=0; i<backData.list.length; i++){ 
+        totalStr +=` 
+        <tr data-id='${backData.list[i]._id}'>
+          <td>${backData.list[i].name}</td>
+          <td>${backData.list[i].age}</td>
+          <td>${backData.list[i].sex}</td>
+          <td>${backData.list[i].phone}</td>
+          <td>
+            <a href="#" class="btn btn-success btn-sm">编辑</a>
+            |
+            <a href="" class="btn btn-danger btn-sm">删除</a>
+          </td>
+        </tr>`
+        }
+        $('.list-box table tbody').html(totalStr)
+    }
+  })
 </script>
